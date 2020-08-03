@@ -25,38 +25,32 @@ import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.protocol.http.HttpService;
 
 public class EthereumSponService {
-
+	//동일한 코드는 객체를 계속해서 만들 필요가 없음...멤버변수로 처리
+	// 계약 주소 세팅
+	String contract = "0xC9B3b341E664D302210900Ad7A409B6ef5F5dBc6";
+	Web3j web3j;
+	Admin admin;
+	List<String> addressList;
+	public EthereumSponService() throws Exception { //생성자로 한번만 호출
+	
+		// 이더리움 네트웍 접속
+		web3j = Web3j.build(new HttpService("HTTP://127.0.0.1:7545"));
+		// accounts 얻기
+		admin = Admin.build(new HttpService("HTTP://127.0.0.1:7545"));
+		PersonalListAccounts personalListAccounts = admin.personalListAccounts().send();
+		addressList = personalListAccounts.getAccountIds();
+	}
 	public void service(String amount) {
 		try {
 
-			// 이더리움 네트웍 접속...
-
-			// 계약 주소 세팅
-			String contract = "0xcb5DB00AEABaFa7c5c6aB010F3C3c22a0d7fC089";
-
-			// 이더리움 네트웍 접속
-			Web3j web3j = Web3j.build(new HttpService("HTTP://127.0.0.1:7545"));
-
-			// accounts 얻기
-			Admin admin = Admin.build(new HttpService("HTTP://127.0.0.1:7545"));
-			PersonalListAccounts personalListAccounts = admin.personalListAccounts().send();
-			List<String> addressList = personalListAccounts.getAccountIds();
-
-			// 토탈 후원금 보기
-			contractGetCall(addressList, contract, web3j);
-
-			// 후원금 적립
-			contractSetCall(amount, addressList, web3j, contract);
-
-			// 토탈 후원금 보기
-			contractGetCall(addressList, contract, web3j);
+			
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void contractGetCall(List<String> addressList, String contract, Web3j web3j) throws Exception {
+	public Object contractGetCall() throws Exception {
 	//get function 호출(block생성 안함)
 	Function function = new Function("getNumber",
 	                                 Collections.emptyList(),
@@ -78,9 +72,11 @@ public class EthereumSponService {
 	System.out.println("getValue = " + decode.get(0).getValue());
 	System.out.println("getType = " + decode.get(0).getTypeAsString());
 	System.out.println("=========================================");
+	
+	return decode.get(0).getValue();
 	}
 
-	private void contractSetCall(String amount, List<String> addressList, Web3j web3j, String contract) throws Exception {
+	public void contractSetCall(String amount) throws Exception {
 	// set function 호출
 	
 	
