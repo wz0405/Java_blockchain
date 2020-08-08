@@ -88,6 +88,10 @@ class Home extends Component{
 
 /* 이더리움 연동 요청  */
 class EthereumNetwork extends Component{  
+	login=(event)=>{
+	window.open("login.html",'_blank','width=600,height=350');
+	}
+
 	createUser=(event)=>{
 	window.open("createUser.html",'_blank','width=800,height=550');
        
@@ -186,7 +190,7 @@ class EthereumNetwork extends Component{
 	     <div>
             <div>
                 <h2>EthereumNetwork 연결 해보세요</h2>   
-                 
+                <button onClick={this.login} > 로그인 </button>  
                 <button onClick={this.createUser} name="team1"> 회원가입 </button>         
             </div>
             <br/><br/>

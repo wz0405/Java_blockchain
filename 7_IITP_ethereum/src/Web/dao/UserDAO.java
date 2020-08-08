@@ -47,12 +47,12 @@ public class UserDAO {
 	
 	
 	public void transferEther(String address) throws Exception {
-		/*
-	  Web3j web3 = Web3j.build(new HttpService("HTTP://127.0.0.1:8545"));
+		
+	  Web3j web3 = Web3j.build(new HttpService("HTTP://127.0.0.1:7545"));
 	  System.out.println("Successfuly connected to Ethereum");
 	  System.out.println("Balance: " + Convert.fromWei(web3.ethGetBalance(address, DefaultBlockParameterName.LATEST).send().getBalance().toString(), Unit.ETHER));
 	  
-	  Admin admin= Admin.build(new HttpService("HTTP://127.0.0.1:8545"));
+	  Admin admin= Admin.build(new HttpService("HTTP://127.0.0.1:7545"));
 	  PersonalListAccounts personalListAccounts = admin.personalListAccounts().send();
 	  List<String> addressList = personalListAccounts.getAccountIds();
 	  
@@ -75,11 +75,12 @@ public class UserDAO {
       RawTransaction rawTransaction  = RawTransaction.createEtherTransaction(
                  nonce,
                  gasPrice,
-                 gasLimit,
+                 gasLimit,  
                  recipientAddress,
                  value);
 
       // Sign the transaction
+      Credentials credentials=Credentials.create("0xef8792f163f57f3e9878d98215bf30c5079dcbb6d0f23c5c93921df8a48f34c1");
       byte[] signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials);
       String hexValue = Numeric.toHexString(signedMessage);
 
@@ -98,9 +99,9 @@ public class UserDAO {
       } while(!transactionReceipt.isPresent());
 
       System.out.println("Transaction " + transactionHash + " was mined in block # " + transactionReceipt.get().getBlockNumber());
-      System.out.println("Balance: " + Convert.fromWei(web3.ethGetBalance(credentials.getAddress(), DefaultBlockParameterName.LATEST).send().getBalance().toString(), Unit.ETHER));
+      System.out.println("Balance: " + Convert.fromWei(web3.ethGetBalance(address, DefaultBlockParameterName.LATEST).send().getBalance().toString(), Unit.ETHER));
 
-	  */
+	  
 	}
 	
 	
@@ -156,14 +157,13 @@ public class UserDAO {
 	}
 	
 
-	
-	public  String readUser(String id, String pw) {
+	public  String login(String id, String pw, String wallet_path) {
 		StringBuffer  result=new StringBuffer();
 		Connection con=null;
 		PreparedStatement st=null;
 		ResultSet rs=null;
 		try {
-			con = EConnection.getConnection(this);	
+			con = EConnection.getConnection(this, wallet_path);	
 			st = con.prepareStatement("select * from users where id=? and pw=? ");
 			st.setString(1, id);
 			st.setString(2, pw);
@@ -171,9 +171,15 @@ public class UserDAO {
    		    if ( rs.next() ) {
 			       result.append("pri_key: "+rs.getString("pri_key"));
 			       result.append("\npub_key: "+rs.getString("pub_key"));
-			       result.append("\naddress: "+rs.getString("address"));
+			       String address=rs.getString("address");
+			       result.append("\naddress: "+address);
+			       
+			       Web3j web3 = Web3j.build(new HttpService("HTTP://127.0.0.1:7545"));
+			 	   System.out.println("Successfuly connected to Ethereum");
+			 	   System.out.println("Balance: " + Convert.fromWei(web3.ethGetBalance(address, DefaultBlockParameterName.LATEST).send().getBalance().toString(), Unit.ETHER));
+			 	  
 			}
-		} catch (SQLException e1) {
+		} catch (SQLException | IOException e1) {
 			// TODO Auto-generated catch block
 			result.append("요청처리에러발생");
 		}
@@ -185,7 +191,8 @@ public class UserDAO {
 			return result.toString();
 	}
 	
+
+	
 	
 	
 }
-

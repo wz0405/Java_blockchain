@@ -25,9 +25,12 @@ public class MainServlet extends HttpServlet {
 	Team1Service service1;
 	Team2Service service2;
 	Team3Service service3;
+	String wallet_path;
 	
     public void init() {
         try {
+        	wallet_path=getServletContext().getRealPath("/");
+
 			service1=new Team1Service();
 			service2=new Team2Service();
 			service3=new Team3Service();
@@ -77,9 +80,9 @@ public class MainServlet extends HttpServlet {
      			String id=(String) obj.get("id");
      			String pw=(String) obj.get("p_w");
      			String name=(String) obj.get("name");
-     			String wallet_path=getServletContext().getRealPath("/");
+     			
+     			
      			String result=t.createUser(id,pw,name,wallet_path);
-
      			System.out.println(result);                	
                		
                	if(result!=null){ 
@@ -88,10 +91,12 @@ public class MainServlet extends HttpServlet {
                		setResultMsg(out, result_obj, 0, "회원 가입 처리 오류");                                       	
                	}               	
         	}else if(sign.equals("login")){
-     			UserDAO t=new UserDAO();
+     			UserDAO userDAO=new UserDAO();
      			String id=(String) obj.get("id");
-     			String pw=(String) obj.get("p_w");                 			
-     			String result=t.readUser(id, pw);
+     			String pw=(String) obj.get("p_w");   
+     			System.out.println(id+":"+pw);
+     			
+     			String result=userDAO.login(id, pw, wallet_path);
      			System.out.println(result);
                	
                	if(result!=null){ 
@@ -147,4 +152,3 @@ public class MainServlet extends HttpServlet {
       	out.print(obj);
 	}
 }
-  
